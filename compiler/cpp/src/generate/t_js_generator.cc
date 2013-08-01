@@ -382,6 +382,14 @@ void t_js_generator::generate_enum(t_enum* tenum) {
   }
 
   f_types_ << "};"<<endl;
+
+  if (gen_require_) {
+    f_types_s_ << "  "
+               << js_type_namespace(tenum->get_program())<<tenum->get_name()
+               << ": "
+               << js_type_namespace(tenum->get_program())<<tenum->get_name()
+               << "," << endl;
+  }
 }
 
 /**
