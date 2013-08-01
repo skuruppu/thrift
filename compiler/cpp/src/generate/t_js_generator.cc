@@ -60,6 +60,9 @@ class t_js_generator : public t_oop_generator {
      iter = parsed_options.find("jquery");
      gen_jquery_ = (iter != parsed_options.end());
 
+     iter = parsed_options.find("require");
+     gen_require_ = (iter != parsed_options.end());
+
      if (gen_node_) {
        out_dir_base_ = "gen-nodejs";
      } else {
@@ -244,6 +247,11 @@ class t_js_generator : public t_oop_generator {
   bool gen_jquery_;
 
   /**
+   * True if we should generate services compatible with require.js.
+   */
+  bool gen_require_;
+
+  /**
    * File streams
    */
   std::ofstream f_types_;
@@ -275,6 +283,8 @@ void t_js_generator::init_generator() {
 
   if (gen_node_) {
     f_types_ << "var ttypes = module.exports = {};" << endl;
+  } else if (gen_require_) {
+    f_types_ << "define({" << endl;
   }
 
   string pns;
@@ -330,6 +340,11 @@ string t_js_generator::render_includes() {
  */
 void t_js_generator::close_generator() {
   // Close types file
+
+  // Close off the require friendly file
+  if (gen_require_) {
+    f_types_ << endl << "});" << endl;
+  }
 
   f_types_.close();
 }
@@ -1803,5 +1818,6 @@ string t_js_generator ::type_to_enum(t_type* type) {
 
 THRIFT_REGISTER_GENERATOR(js, "Javascript",
 "    jquery:          Generate jQuery compatible code.\n"
-"    node:            Generate node.js compatible code.\n")
+"    node:            Generate node.js compatible code.\n"
+"    require:         Generate require.js compatible code.\n")
 
