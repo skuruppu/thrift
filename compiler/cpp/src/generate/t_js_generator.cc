@@ -255,6 +255,7 @@ class t_js_generator : public t_oop_generator {
    * File streams
    */
   std::ofstream f_types_;
+  std::ostringstream f_types_s_;
   std::ofstream f_service_;
 };
 
@@ -284,7 +285,7 @@ void t_js_generator::init_generator() {
   if (gen_node_) {
     f_types_ << "var ttypes = module.exports = {};" << endl;
   } else if (gen_require_) {
-    f_types_ << "define({" << endl;
+    f_types_ << "define(function() {" << endl << endl;
   }
 
   string pns;
@@ -343,6 +344,8 @@ void t_js_generator::close_generator() {
 
   // Close off the require friendly file
   if (gen_require_) {
+    f_types_ << endl << "return {" << endl;
+    f_types_ << f_types_s_.str() << "}" << endl;
     f_types_ << endl << "});" << endl;
   }
 
