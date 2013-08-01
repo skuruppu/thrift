@@ -533,6 +533,13 @@ void t_js_generator::generate_xception(t_struct* txception) {
 void t_js_generator::generate_js_struct(t_struct* tstruct,
                                             bool is_exception) {
   generate_js_struct_definition(f_types_, tstruct, is_exception);
+
+  if (gen_require_) {
+    f_types_s_ << "  " << js_namespace(tstruct->get_program())
+               << tstruct->get_name() << ": "
+               << js_namespace(tstruct->get_program())
+               << tstruct->get_name() << "," << endl;
+  }
 }
 
 /**
