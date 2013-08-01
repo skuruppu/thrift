@@ -402,6 +402,11 @@ void t_js_generator::generate_const(t_const* tconst) {
 
   f_types_ << js_type_namespace(program_)  << name << " = ";
   f_types_ << render_const_value(type, value) << ";" << endl;
+
+  if (gen_require_) {
+    f_types_s_ << "  " << js_type_namespace(program_) << name << ": "
+               << js_type_namespace(program_) << name << "," << endl;
+  }
 }
 
 /**
