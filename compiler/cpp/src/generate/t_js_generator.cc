@@ -257,6 +257,7 @@ class t_js_generator : public t_oop_generator {
   std::ofstream f_types_;
   std::ostringstream f_types_s_;
   std::ofstream f_service_;
+  std::ostringstream f_service_s_;
 };
 
 
@@ -345,9 +346,9 @@ void t_js_generator::close_generator() {
 
   // Close off the require friendly file
   if (gen_require_) {
-    f_types_ << endl << "return {" << endl;
-    f_types_ << f_types_s_.str() << "}" << endl;
-    f_types_ << endl << "});" << endl;
+    f_types_ << endl << "return {" << endl
+             << f_types_s_.str() << "}" << endl << endl
+             << "});" << endl;
   }
 
   f_types_.close();
@@ -802,6 +803,9 @@ void t_js_generator::generate_service(t_service* tservice) {
 
       f_service_ <<
         "var ttypes = require('./" + program_->get_name() + "_types');" << endl;
+    } else if (gen_require_) {
+      f_service_ <<
+        "define([\"thrift\"], function(Thrift) {" << endl << endl;
     }
 
     generate_service_helpers(tservice);
@@ -810,6 +814,11 @@ void t_js_generator::generate_service(t_service* tservice) {
 
     if (gen_node_) {
       generate_service_processor(tservice);
+    } else if (gen_require_) {
+      // Close off the require friendly file
+      f_service_ << endl << "return {" << endl
+                 << f_service_s_.str() << "}" << endl << endl
+                 << "});" << endl;
     }
 
     f_service_.close();
@@ -953,6 +962,13 @@ void t_js_generator::generate_service_helpers(t_service* tservice) {
         string name = ts->get_name();
         ts->set_name(service_name_ + "_" + name);
         generate_js_struct_definition(f_service_, ts, false, false);
+        if (gen_require_) {
+          f_service_s_ << "  " << js_namespace(ts->get_program())
+                       << ts->get_name() << ": "
+                       << js_namespace(ts->get_program())
+                       << ts->get_name() << "," << endl;
+        }
+
         generate_js_function_helpers(*f_iter);
         ts->set_name(name);
     }
@@ -1011,6 +1027,14 @@ void t_js_generator::generate_service_client(t_service* tservice) {
   } else {
     f_service_ <<
         js_namespace(tservice->get_program()) << service_name_ << "Client = function(input, output) {"<<endl;
+
+    if (gen_require_) {
+        f_service_s_ << "  " <<
+            js_namespace(tservice->get_program()) << service_name_ <<
+            "Client: " <<
+            js_namespace(tservice->get_program()) << service_name_ <<
+            "Client," << endl;
+    }
   }
 
   indent_up();
