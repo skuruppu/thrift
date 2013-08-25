@@ -285,7 +285,8 @@ void t_js_generator::init_generator() {
   if (gen_node_) {
     f_types_ << "var ttypes = module.exports = {};" << endl;
   } else if (gen_require_) {
-    f_types_ << "define(function() {" << endl << endl;
+    f_types_ <<
+      "define([\"thrift\"], function(Thrift) {" << endl << endl;
   }
 
   string pns;
