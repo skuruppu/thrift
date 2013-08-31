@@ -804,8 +804,14 @@ void t_js_generator::generate_service(t_service* tservice) {
       f_service_ <<
         "var ttypes = require('./" + program_->get_name() + "_types');" << endl;
     } else if (gen_require_) {
-      f_service_ <<
-        "define([\"thrift\"], function(Thrift) {" << endl << endl;
+      string files = "\"thrift\"";
+      string names = "Thrift";
+      if (tservice->get_extends() != NULL) {
+          files += ", \"gen-js/" + tservice->get_extends()->get_name() + "\"";
+          names += ", " + tservice->get_extends()->get_name() + "Client";
+      }
+      f_service_ << "define([" << files << "], function(" <<
+                    names << ") {" << endl << endl;
     }
 
     generate_service_helpers(tservice);
