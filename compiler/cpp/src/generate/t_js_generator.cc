@@ -532,6 +532,10 @@ void t_js_generator::generate_xception(t_struct* txception) {
  */
 void t_js_generator::generate_js_struct(t_struct* tstruct,
                                             bool is_exception) {
+  // Not generating services for require friendly JS modules yet
+  if (gen_require_) {
+      return;
+  }
   generate_js_struct_definition(f_types_, tstruct, is_exception);
 }
 
@@ -773,6 +777,11 @@ void t_js_generator::generate_js_struct_writer(ofstream& out,
  * @param tservice The service definition
  */
 void t_js_generator::generate_service(t_service* tservice) {
+    // Not generating services for require friendly JS modules yet
+    if (gen_require_) {
+        return;
+    }
+
     string f_service_name = get_out_dir()+service_name_+".js";
     f_service_.open(f_service_name.c_str());
 
