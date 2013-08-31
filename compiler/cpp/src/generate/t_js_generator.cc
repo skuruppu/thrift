@@ -286,8 +286,17 @@ void t_js_generator::init_generator() {
   if (gen_node_) {
     f_types_ << "var ttypes = module.exports = {};" << endl;
   } else if (gen_require_) {
-    f_types_ <<
-      "define([\"thrift\"], function(Thrift) {" << endl << endl;
+    // Need to generate all dependencies together hence doing the work of
+    // js_includes and render_includes here
+    string files = "\"thrift\"";
+    string names = "Thrift";
+    const vector<t_program*>& includes = program_->get_includes();
+    for (size_t i = 0; i < includes.size(); ++i) {
+         files += ", \"gen-js/" + includes[i]->get_name() + "_types\"";
+         names += ", " + includes[i]->get_name();
+    }
+    f_types_ << "define([" << files << "], function(" <<
+                   names << ") {" << endl << endl;
   }
 
   string pns;
