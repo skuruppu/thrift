@@ -284,8 +284,6 @@ void t_js_generator::init_generator() {
 
   if (gen_node_) {
     f_types_ << "var ttypes = module.exports = {};" << endl;
-  } else if (gen_require_) {
-    f_types_ << "define([\"thrift\"], function(Thrift) {" << endl;
   }
 
   string pns;
@@ -310,6 +308,8 @@ void t_js_generator::init_generator() {
 string t_js_generator::js_includes() {
   if (gen_node_) {
     return string("var Thrift = require('thrift').Thrift;");
+  } else if (gen_require_) {
+    return string("define([\"thrift\"], function(Thrift) {");
   }
   string inc;
 
