@@ -285,8 +285,7 @@ void t_js_generator::init_generator() {
   if (gen_node_) {
     f_types_ << "var ttypes = module.exports = {};" << endl;
   } else if (gen_require_) {
-    f_types_ <<
-      "define([\"thrift\"], function(Thrift) {" << endl << endl;
+    f_types_ << "define([\"thrift\"], function(Thrift) {" << endl;
   }
 
   string pns;
@@ -345,9 +344,9 @@ void t_js_generator::close_generator() {
 
   // Close off the require friendly file
   if (gen_require_) {
-    f_types_ << endl << "return {" << endl;
-    f_types_ << f_types_s_.str() << "}" << endl;
-    f_types_ << endl << "});" << endl;
+    f_types_ << endl << "return {" << endl
+             << f_types_s_.str() << "}" << endl
+             << endl << "});" << endl;
   }
 
   f_types_.close();
@@ -385,11 +384,13 @@ void t_js_generator::generate_enum(t_enum* tenum) {
   f_types_ << "};"<<endl;
 
   if (gen_require_) {
-    f_types_s_ << "  "
+    indent_up();
+    f_types_s_ << indent()
                << js_type_namespace(tenum->get_program())<<tenum->get_name()
                << ": "
                << js_type_namespace(tenum->get_program())<<tenum->get_name()
                << "," << endl;
+    indent_down();
   }
 }
 
@@ -405,8 +406,13 @@ void t_js_generator::generate_const(t_const* tconst) {
   f_types_ << render_const_value(type, value) << ";" << endl;
 
   if (gen_require_) {
-    f_types_s_ << "  " << js_type_namespace(program_) << name << ": "
-               << js_type_namespace(program_) << name << "," << endl;
+    indent_up();
+    f_types_s_ << indent()
+               << js_type_namespace(program_) << name
+               << ": "
+               << js_type_namespace(program_) << name
+               << "," << endl;
+    indent_down();
   }
 }
 
@@ -533,7 +539,7 @@ void t_js_generator::generate_xception(t_struct* txception) {
  */
 void t_js_generator::generate_js_struct(t_struct* tstruct,
                                             bool is_exception) {
-  // Not generating services for require friendly JS modules yet
+  // Not generating structs for require friendly JS modules yet
   if (gen_require_) {
       return;
   }
